@@ -828,6 +828,9 @@ def do_indent(
     :param first: Don't skip indenting the first line.
     :param blank: Don't skip indenting empty lines.
 
+    .. versionchanged:: 3.2.0
+        An empty first line is not indented when ``first=True`` and ``blank=False``.
+
     .. versionchanged:: 3.0
         ``width`` can be a string.
 
@@ -851,17 +854,22 @@ def do_indent(
 
     if blank:
         rv = (newline + indention).join(s.splitlines())
+
+        if first:
+            rv = indention + rv
     else:
         lines = s.splitlines()
-        rv = lines.pop(0)
+        first_line = lines.pop(0)
+
+        if first and first_line:
+            rv = indention + first_line
+        else:
+            rv = first_line
 
         if lines:
             rv += newline + newline.join(
                 indention + line if line else line for line in lines
             )
-
-    if first:
-        rv = indention + rv
 
     return rv
 

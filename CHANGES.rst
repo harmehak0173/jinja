@@ -13,6 +13,7 @@ Unreleased
 -   Use modern packaging metadata with ``pyproject.toml`` instead of ``setup.cfg``.
     :pr:`1793`
 -   Use ``flit_core`` instead of ``setuptools`` as build backend.
+-   The ``|indent`` filter does not indent an empty first line when ``first=True`` and ``blank=False``. :issue:`2176`
 
 
 Version 3.1.6

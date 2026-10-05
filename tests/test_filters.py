@@ -166,9 +166,17 @@ class TestFilter:
         t = env.from_string("{{ foo|indent(2, false, true) }}")
         assert t.render(foo=text) == '\n  foo bar\n  "baz"\n  '
         t = env.from_string("{{ foo|indent(2, true, false) }}")
-        assert t.render(foo=text) == '  \n  foo bar\n  "baz"\n'
+        assert t.render(foo=text) == '\n  foo bar\n  "baz"\n'
         t = env.from_string("{{ foo|indent(2, true, true) }}")
         assert t.render(foo=text) == '  \n  foo bar\n  "baz"\n  '
+
+        text2 = "\n".join(["foo bar", '"baz"', ""])
+        if markup:
+            text2 = Markup(text2)
+        t = env.from_string("{{ foo|indent(2, false, false) }}")
+        assert t.render(foo=text2) == 'foo bar\n  "baz"\n'
+        t = env.from_string("{{ foo|indent(2, true, false) }}")
+        assert t.render(foo=text2) == '  foo bar\n  "baz"\n'
 
     def test_indent(self, env):
         self._test_indent_multiline_template(env)
@@ -178,6 +186,14 @@ class TestFilter:
         assert t.render() == "    jinja"
         t = env.from_string('{{ "jinja"|indent(blank=true) }}')
         assert t.render() == "jinja"
+        t = env.from_string("{% filter indent(4, first=true) %}{% endfilter %}")
+        assert t.render() == ""
+        t = env.from_string('{{ ""|indent(first=true) }}')
+        assert t.render() == ""
+        t = env.from_string('{{ "\n"|indent(first=true) }}')
+        assert t.render() == "\n"
+        t = env.from_string('{{ "\nhello"|indent(first=true) }}')
+        assert t.render() == "\n    hello"
 
     def test_indent_markup_input(self, env):
         """
